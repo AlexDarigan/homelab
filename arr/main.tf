@@ -3,17 +3,27 @@ variable "KUBECONFIG" {
   sensitive = true
 }
 
+variable "namespace" {
+  type = string
+  default = "arr-stack"
+}
+
+resource "kubernetes_namespace" "arr_stack" {
+  metadata {
+    name = var.namespace
+    annotations = {
+      "description" = "Namespace for the arr-stack apps (sonarr, radarr, etc)"
+    }
+  }
+}
+
 // Move Media Management
 module "radarr" {
     KUBECONFIG = var.KUBECONFIG
     name = "radarr"
     source = "./core"
     image = "ghcr.io/hotio/radarr"    
-    ports = {
-        internal = 7878
-        external = 7878
-        node_port = 30001
-    }
+    port = 7878
 }
 
 // Television Media Management
@@ -22,11 +32,7 @@ module "sonarr" {
     name = "sonarr"
     source = "./core"
     image = "ghcr.io/hotio/sonarr"    
-    ports = {
-        internal = 8989
-        external = 8989
-        node_port = 30002
-    }
+    port = 8989
 }
 
 // Torrent Indexer Management
@@ -34,12 +40,9 @@ module "prowlarr" {
   KUBECONFIG = var.KUBECONFIG
   name = "prowlarr"
   source = "./core"
-  image = "gchr.io/hotio/prowlarr"
-  ports = {
-    internal = 9696
-    external = 9696
-    node_port = 30003
-  }
+  image = "lscr.io/linuxserver/prowlarr:latest" 
+  # image = "gchr.io/hotio/prowlarr" // Bad Image Pull
+  port = 9696
 }
 
 // Media Request Management
@@ -48,22 +51,15 @@ module "jellyseerr" {
   name = "jellyseer"
   source = "./core"
   image = "ghcr.io/hotio/jellyseerr"
-  ports = {
-    internal = 5055
-    external = 5055
-    node_port = 30004
-  }
+  port = 5055
 }
 
 // Torrent Mangement
-module "QBitTorrent" {
+module "Transmission" {
   KUBECONFIG = var.KUBECONFIG
-  name = "QBitTorrent"
+  name = "transmission"
   source = "./core"
-  image = "ghcr.io/hotio/qbittorrent"
-  ports = {
-    internal = 8080
-    external = 8080
-    node_port = 30005
-  }
+  image = "lscr.io/linuxserver/transmission"
+  port = 9091
+  replicas = 1
 }

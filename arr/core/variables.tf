@@ -13,23 +13,17 @@ locals {
   deployment_name = "${var.name}-deployment"
   service_name = "${var.name}-service"
   
-  library = object({
-    name = "library"
-    mount_path = "/library"
-    host_path = "${var.root_host_path}/library"
-  })
-
-  config = object({
+  config = {
     name = "config"
     mount_path = "/config"
     host_path = "${var.root_host_path}/apps/${var.name}/config"
-  })
+  }
 
-  downloads = object({
-    name = "downloads"
-    mount_path = "/downloads"
-    host_path = "${var.root_host_path}/apps/${var.name}/downloads"
-  })
+  drive = {
+    name = "drive"
+    mount_path = "/drive"
+    host_path = var.root_host_path
+  }
 
 }
 
@@ -47,12 +41,8 @@ variable "image" {
   type = string
 }
 
-variable "ports" {
-  type = object({
-    internal = number
-    external = number
-    node_port = number
-  })
+variable "port" {
+  type = string
 }
 
 variable "service_type" {
@@ -62,7 +52,7 @@ variable "service_type" {
 
 variable "restart_policy" {
   type = string
-  default = "unless-stopped"
+  default = "Always"
 }
 
 variable "puid" {
@@ -86,9 +76,19 @@ variable "umask" {
   default = "002"
 }
 
+variable "namespace" {
+  type = string
+  default = "arr-stack"
+}
+
 variable "dns_policy" {
   type = string
   default = "None"
+}
+
+variable "host_network" {
+  type = bool
+  default = true
 }
 
 variable "nameservers" {

@@ -11,7 +11,6 @@ provider "kubernetes" {
     config_path = var.KUBECONFIG
 }
 
-
 resource "kubernetes_deployment" "arr_deployment" {
   metadata {
     name = local.deployment_name
@@ -28,13 +27,14 @@ resource "kubernetes_deployment" "arr_deployment" {
     }
     template {
       metadata {
+        namespace = var.namespace
         labels = {
           app = local.app_name
         }
       }
       spec {
         restart_policy = var.restart_policy
-
+        host_network = var.host_network
         dns_policy = var.dns_policy
         dns_config { 
           nameservers = var.nameservers
@@ -42,18 +42,18 @@ resource "kubernetes_deployment" "arr_deployment" {
 
         container {
           name = local.container_name
-          image = var.container.image
+          image = var.image
           
           port {
-            container_port = var.ports.internal
+            container_port = var.port
           }
           volume_mount {
             name = local.config.name
             mount_path = local.config.mount_path
           }
           volume_mount {
-            name = local.library.name
-            mount_path = local.library.mount_path
+            name = local.drive.name
+            mount_path = local.drive.mount_path
           }
           env {
             name  = "PUID"
@@ -73,9 +73,9 @@ resource "kubernetes_deployment" "arr_deployment" {
           }
         }
         volume {
-          name = local.library.name
+          name = local.drive.name
           host_path {
-            path = local.library.host_path
+            path = local.drive.host_path
           }
         }
         volume {
@@ -100,9 +100,8 @@ resource "kubernetes_service" "arr_service" {
     }
     
     port {
-      port = var.ports.container
-      target_port = var.ports.service
-      node_port = var.ports.node_port
+      target_port = var.port
+      port = var.port
     }
     type = var.service_type
   }

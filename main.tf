@@ -20,7 +20,7 @@ module "install_k3s" {
   agent = local.connection.agent
 }
 
-# module "arr" {
-#   KUBECONFIG = var.KUBECONFIG
-#   source = "./arr"
-# }
+module "arr" {
+  KUBECONFIG = var.KUBECONFIG
+  source = "./arr"
+}
