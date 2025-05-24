@@ -16,11 +16,12 @@ variable "agent" {
 
 resource "null_resource" "install_k3s" {
 
+// We're using calico instead of flannel because it doesn't seem to err out
+// https://docs.tigera.io/calico/latest/getting-started/kubernetes/quickstart
   provisioner "remote-exec" {
     inline = [
-      "curl -sfL https://get.k3s.io | sh -s - server --flannel-backend=wireguard-native --write-kubeconfig-mode=644",
-      "sleep 10s",
-      "cat /etc/rancher/k3s/k3s.yaml"
+   //   "curl -sfL https://get.k3s.io | sh -s - server --flannel-backend=vxlan --write-kubeconfig-mode=644","
+    "curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='--flannel-backend=none --disable-network-policy --cluster-cidr=192.168.0.0/16 --service-cidr=10.43.0.0/16 --disable=traefik --write-kubeconfig-mode=644' sh -"
     ]
 
     connection {

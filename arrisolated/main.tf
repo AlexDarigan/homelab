@@ -11,7 +11,7 @@ provider "kubernetes" {
     config_path = var.KUBECONFIG
 }
 
-resource "kubernetes_deployment" "filebrowser" {
+resource "kubernetes_deployment" "arr_deployment" {
   metadata {
     name = local.deployment_name
     labels = {
@@ -27,31 +27,33 @@ resource "kubernetes_deployment" "filebrowser" {
     }
     template {
       metadata {
+        namespace = var.namespace
         labels = {
           app = local.app_name
         }
       }
       spec {
         restart_policy = var.restart_policy
-        host_network = var.host_network
-        dns_policy = var.dns_policy
-        dns_config { 
-          nameservers = var.nameservers
-        }
+        # dns_policy = "ClusterFirst"
+        # host_network = var.host_network
+//        dns_policy = var.dns_policy
+        # dns_config { 
+        #   nameservers = var.nameservers
+        # }
+
         container {
-          name  = local.container_name
+          name = local.container_name
           image = var.image
-        #   image = "filebrowser/filebrowser:latest"
+          
           port {
-            # container_port = 8001
-            container_port = var.port
+            container_port = 8989
           }
           volume_mount {
-            name      = local.config.name
+            name = local.config.name
             mount_path = local.config.mount_path
           }
           volume_mount {
-            name      = local.drive.name
+            name = local.drive.name
             mount_path = local.drive.mount_path
           }
           env {
@@ -88,7 +90,8 @@ resource "kubernetes_deployment" "filebrowser" {
   }
 }
 
-resource "kubernetes_service" "filebrowser" {
+
+resource "kubernetes_service" "arr_service" {
   metadata {
     name = local.service_name
   }
@@ -96,10 +99,12 @@ resource "kubernetes_service" "filebrowser" {
     selector = {
       app = local.app_name
     }
+    
     port {
-      port        = var.port
-      target_port = var.port
+      target_port = 8989
+      port = 80
+      node_port = 30015
     }
-    type = var.service_type
+    type = "NodePort"
   }
 }

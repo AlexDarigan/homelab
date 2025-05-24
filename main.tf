@@ -12,15 +12,31 @@ locals {
 }
 
 
-module "install_k3s" {
-  source = "./install"
-  host = local.connection.host
-  user = local.connection.user
-  type = local.connection.type
-  agent = local.connection.agent
-}
+# module "install_k3s" {
+#   source = "./install"
+#   host = local.connection.host
+#   user = local.connection.user
+#   type = local.connection.type
+#   agent = local.connection.agent
+# }
 
-module "arr" {
+# module "arr" {
+#   KUBECONFIG = var.KUBECONFIG
+#   source = "./arr"
+# }
+
+# module "filebrowser" {
+#   KUBECONFIG = var.KUBECONFIG
+#   source = "./filebrowser"
+#   name = "filebrowser"
+#   image = "filebrowser/filebrowser:latest"
+#   port = 8001
+# }
+
+module "arr_isolated" {
   KUBECONFIG = var.KUBECONFIG
-  source = "./arr"
+  source = "./arrisolated"
+  name = "sonarr-isolated"
+  image = "ghcr.io/hotio/sonarr"
+  port = 9292
 }

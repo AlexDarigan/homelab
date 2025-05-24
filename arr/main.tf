@@ -3,20 +3,6 @@ variable "KUBECONFIG" {
   sensitive = true
 }
 
-variable "namespace" {
-  type = string
-  default = "arr-stack"
-}
-
-resource "kubernetes_namespace" "arr_stack" {
-  metadata {
-    name = var.namespace
-    annotations = {
-      "description" = "Namespace for the arr-stack apps (sonarr, radarr, etc)"
-    }
-  }
-}
-
 // Move Media Management
 module "radarr" {
     KUBECONFIG = var.KUBECONFIG
