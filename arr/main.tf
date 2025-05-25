@@ -3,49 +3,49 @@ variable "KUBECONFIG" {
   sensitive = true
 }
 
-// Move Media Management
-module "radarr" {
-    KUBECONFIG = var.KUBECONFIG
-    name = "radarr"
-    source = "./core"
-    image = "ghcr.io/hotio/radarr"    
-    port = 7878
+terraform {
+  required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.25"
+    }
+    http = {
+      source = "hashicorp/http"
+      version = "3.5.0"
+    }
+    local = {
+      source = "hashicorp/local"
+      version = "2.5.3"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0" # Use an appropriate version
+    }
+  }
+  
 }
 
-// Television Media Management
-module "sonarr" {
-    KUBECONFIG = var.KUBECONFIG
-    name = "sonarr"
-    source = "./core"
-    image = "ghcr.io/hotio/sonarr"    
-    port = 8989
+provider "kubernetes" {
+    config_path = var.KUBECONFIG
 }
 
-// Torrent Indexer Management
-module "prowlarr" {
-  KUBECONFIG = var.KUBECONFIG
-  name = "prowlarr"
-  source = "./core"
-  image = "lscr.io/linuxserver/prowlarr:latest" 
-  # image = "gchr.io/hotio/prowlarr" // Bad Image Pull
-  port = 9696
+module "arrstackX" {
+  source       = "./core"
+  for_each     = var.config
+  name         = each.value.name
+  namespace    = each.value.namespace
+  image        = each.value.image
+  ports        = each.value.ports
+  service_type = each.value.service_type
 }
 
-// Media Request Management
-module "jellyseerr" {
-  KUBECONFIG = var.KUBECONFIG
-  name = "jellyseer"
-  source = "./core"
-  image = "ghcr.io/hotio/jellyseerr"
-  port = 5055
-}
-
-// Torrent Mangement
 module "Transmission" {
   KUBECONFIG = var.KUBECONFIG
   name = "transmission"
-  source = "./core"
+  source = "./download"
   image = "lscr.io/linuxserver/transmission"
-  port = 9091
+  port = 9090
   replicas = 1
+  node_port = 30014
 }
+

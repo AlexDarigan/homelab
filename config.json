@@ -1,0 +1,47 @@
+{
+    "sonarr": {
+        "name": "sonarr",
+        "image": "ghcr.io/hotio/sonarr",
+        "namespace": "arr-stack",
+        "ports": [{
+            "internal": 8989,
+            "external": 8989,
+            "node": 30011
+        }],
+        "service_type": "NodePort" 
+    },
+    "radarr": {
+        "name": "radarr",
+        "image": "ghcr.io/hotio/radarr",
+        "namespace": "arr-stack",
+        "ports": [{
+            "internal": 7878,
+            "external": 7878,
+            "node": 30010
+        }],
+        "service_type": "NodePort" 
+
+    },
+    "prowlarr": {
+        "name": "prowlarr",
+        "image": "lscr.io/linuxserver/prowlarr:latest",
+        "namespace": "arr-stack",
+        "ports": [{
+            "internal": 9696,
+            "external": 9696,
+            "node": 30012
+        }],
+        "service_type": "NodePort" 
+    },
+    "jellyseerr": {
+        "name": "jellyseerr",
+        "image": "ghcr.io/hotio/jellyseerr",
+        "namespace": "arr-stack",
+        "ports": [{
+            "internal": 5055,
+            "external": 5055,
+            "node": 30013
+        }],
+        "service_type": "NodePort" 
+    }
+}

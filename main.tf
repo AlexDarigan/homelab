@@ -9,6 +9,7 @@ terraform {
 
 locals {
   connection = jsondecode(file(var.RASPI_SSH_CONFIG))
+  config = jsondecode(file("config.json"))
 }
 
 
@@ -20,23 +21,20 @@ locals {
 #   agent = local.connection.agent
 # }
 
-# module "arr" {
-#   KUBECONFIG = var.KUBECONFIG
-#   source = "./arr"
+# resource "null_resource" "create_arr_namespace" {
+
+#   provisioner "local-exec" {
+#     command = "kubectl create namespace arr-stack"
+#   } 
 # }
 
-# module "filebrowser" {
-#   KUBECONFIG = var.KUBECONFIG
-#   source = "./filebrowser"
-#   name = "filebrowser"
-#   image = "filebrowser/filebrowser:latest"
-#   port = 8001
-# }
-
-module "arr_isolated" {
+module "arr" {
   KUBECONFIG = var.KUBECONFIG
-  source = "./arrisolated"
-  name = "sonarr-isolated"
-  image = "ghcr.io/hotio/sonarr"
-  port = 9292
+  source = "./arr"
+  agent = local.connection.agent
+  host = local.connection.host
+  type = local.connection.type
+  user = local.connection.user
+  config = local.config
 }
+

@@ -1,18 +1,6 @@
-terraform {
-  required_providers {
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 2.25"
-    }
-  }
-}
-
-provider "kubernetes" {
-    config_path = var.KUBECONFIG
-}
-
 resource "kubernetes_deployment" "arr_deployment" {
   metadata {
+    namespace = var.namespace
     name = local.deployment_name
     labels = {
       app = local.app_name
@@ -34,18 +22,14 @@ resource "kubernetes_deployment" "arr_deployment" {
       }
       spec {
         restart_policy = var.restart_policy
-        host_network = var.host_network
-        dns_policy = var.dns_policy
-        dns_config { 
-          nameservers = var.nameservers
-        }
-
         container {
           name = local.container_name
           image = var.image
-          
-          port {
-            container_port = var.port
+          dynamic "port" {
+            for_each = var.ports
+            content {
+              container_port = port.value.internal
+            }
           }
           volume_mount {
             name = local.config.name
@@ -90,19 +74,3 @@ resource "kubernetes_deployment" "arr_deployment" {
 }
 
 
-resource "kubernetes_service" "arr_service" {
-  metadata {
-    name = local.service_name
-  }
-  spec {
-    selector = {
-      app = local.app_name
-    }
-    
-    port {
-      target_port = var.port
-      port = var.port
-    }
-    type = var.service_type
-  }
-}

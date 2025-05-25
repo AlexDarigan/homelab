@@ -1,0 +1,110 @@
+// 1. Install K3S
+// 1.1 Configure Calico over Flannel
+// 2. Create XML Config Maps
+// 3. Deploy Apps
+// 4. Deploy Services
+// 5. Use an API to setup apps (sonarr,radarr on prowlarr, sonarr, radarr on jellyseerr, download client on sonarr,radarr)
+
+
+# resource "null_resource" "saveUrl" {
+
+#   provisioner "local-exec" {    
+#     command = "echo sonarUrl '${module.sonarr.baseUrl}',radarUrl '${module.radarr.baseUrl}',prowlarrUrl '${module.prowlarr.baseUrl}',jellyseerrUrl '${module.jellyseerr.baseUrl}' >> /home/alexdarigan/urls.txt"
+#   }
+
+#   triggers = {
+#     always_run = timestamp() // Change on run
+#     # always_run = module.sonarr.baseUrl // Change only when the url does
+#   }
+
+#   depends_on = [ module.sonarr.baseUrl, module.jellyseerr.baseUrl, module.radarr.baseUrl, module.prowlarr.baseUrl ]
+# }
+
+# resource "random_uuid" "sonarAPIKey" {}
+
+
+
+# // Change Sonar API Key
+# resource "null_resource" "name" {
+#   provisioner "remote-exec" {
+    
+#     inline = [
+#       "sed -r 's|<apiKey>(.*)</apiKey>|<apiKey>${random_uuid.sonarAPIKey.result}</apiKey>|g' /drive/apps/sonarr/config/config.xml > config.xml.tmp && mv config.xml.tmp /home/darigan/config.xml",
+#     ]
+
+#     connection {
+#       host = var.host
+#       user = var.user
+#       type = var.type
+#       agent = var.agent
+#     }
+#   }
+
+#   triggers = {
+#     always_run = timestamp()
+#   }
+
+#   depends_on = [ module.sonarr, random_uuid.sonarAPIKey ]
+# }
+
+
+# data "http" "add_prowlarr_application" {
+#   url    = "http://192.168.1.12:30012/api/v1/applications"
+#   method = "POST"
+#   request_headers = {
+#     "Content-Type": "application/json",
+#     "X-Api-Key": "KEYHERE"
+#   }
+#   # Optional request body
+#   request_body = jsonencode({
+#     "configContract": "SonarrSettings",
+#     "enable": true,
+#     "fields": [
+#         {
+#             "name": "prowlarrUrl",
+#             "value": "http://${module.prowlarr.baseUrl}:9696"
+#         }, 
+#         {
+#             "name": "baseUrl",
+#             "value": "http://${module.sonarr.baseUrl}:8989"
+#         },
+#         {
+#             "name": "apiKey",
+#             "value": "KEYHERE" // Still not sure how to get these
+#         },
+#         {
+#             "name": "syncCategories",
+#             "value": [
+#                 5000,
+#                 5010,
+#                 5020,
+#                 5030,
+#                 5040,
+#                 5045,
+#                 5050,
+#                 5090
+#             ]
+#         },
+#         {
+#             "name": "animeSyncCategories",
+#             "value": [5070]
+#         },
+#         {
+#             "name": "syncAnimeStandardFormatSearch",
+#             "value": true
+#         },
+#         {
+#             "name": "syncRejectBlocklistedTorrentHashesWhileGrabbing",
+#             "value": false
+#         }
+#     ],
+#     "implementation": "Sonarr",
+#     "implementationName": "Sonarr",
+#     "infoLink": "https://wiki.servarr.com/prowlarr/supported#sonarrhttps://wiki.servarr.com/prowlarr/supported#sonarr",
+#     "syncLevel": "fullSync",
+#     "name": "SonarAPITerraform",
+#     "tags": []
+#   })
+
+#   depends_on = [ module.prowlarr.baseUrl, module.sonarr.baseUrl ]
+# }

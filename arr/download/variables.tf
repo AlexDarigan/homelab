@@ -3,7 +3,9 @@ variable "KUBECONFIG" {
   default = "~./kube/config.yaml"
 }
 
-
+variable "name" {
+  type = string
+}
 
 locals {
   app_name = "${var.name}-app"
@@ -14,7 +16,7 @@ locals {
   config = {
     name = "config"
     mount_path = "/config"
-    host_path = "${var.root_host_path}/apps/${var.name}"
+    host_path = "${var.root_host_path}/apps/${var.name}/config"
   }
 
   drive = {
@@ -22,10 +24,7 @@ locals {
     mount_path = "/drive"
     host_path = var.root_host_path
   }
-}
 
-variable "name" {
-  type = string
 }
 
 variable "root_host_path" {
@@ -42,8 +41,13 @@ variable "image" {
   type = string
 }
 
+variable "port" {
+  type = string
+}
+
 variable "service_type" {
   type = string
+  default = "NodePort"
 }
 
 variable "restart_policy" {
@@ -71,14 +75,11 @@ variable "umask" {
   default = "002"
 }
 
-variable "namespace" {
-  type = string
+variable "node_port" {
+  type = number
 }
 
-variable "ports" {
-  type = list(object({
-    internal = number
-    external = number
-    node = number
-  }))
+variable "namespace" {
+  type = string
+  default = "arr-stack"
 }
