@@ -4,6 +4,10 @@ terraform {
       source = "hashicorp/null"
       version = "~> 3.0"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.25"
+    }
   }
 }
 
@@ -12,6 +16,9 @@ locals {
   config = jsondecode(file("config.json"))
 }
 
+provider "kubernetes" {
+    config_path = var.KUBECONFIG
+}
 
 # module "install_k3s" {
 #   source = "./install"
@@ -21,20 +28,9 @@ locals {
 #   agent = local.connection.agent
 # }
 
-# resource "null_resource" "create_arr_namespace" {
-
-#   provisioner "local-exec" {
-#     command = "kubectl create namespace arr-stack"
-#   } 
-# }
-
 module "arr" {
-  KUBECONFIG = var.KUBECONFIG
   source = "./arr"
-  agent = local.connection.agent
-  host = local.connection.host
-  type = local.connection.type
-  user = local.connection.user
-  config = local.config
+  for_each = local.config.apps
+  model = each.value
+  env = local.config.env
 }
-

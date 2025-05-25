@@ -1,47 +1,165 @@
 {
-    "sonarr": {
-        "name": "sonarr",
-        "image": "ghcr.io/hotio/sonarr",
-        "namespace": "arr-stack",
-        "ports": [{
-            "internal": 8989,
-            "external": 8989,
-            "node": 30011
-        }],
-        "service_type": "NodePort" 
-    },
-    "radarr": {
-        "name": "radarr",
-        "image": "ghcr.io/hotio/radarr",
-        "namespace": "arr-stack",
-        "ports": [{
-            "internal": 7878,
-            "external": 7878,
-            "node": 30010
-        }],
-        "service_type": "NodePort" 
-
-    },
-    "prowlarr": {
-        "name": "prowlarr",
-        "image": "lscr.io/linuxserver/prowlarr:latest",
-        "namespace": "arr-stack",
-        "ports": [{
-            "internal": 9696,
-            "external": 9696,
-            "node": 30012
-        }],
-        "service_type": "NodePort" 
-    },
-    "jellyseerr": {
-        "name": "jellyseerr",
-        "image": "ghcr.io/hotio/jellyseerr",
-        "namespace": "arr-stack",
-        "ports": [{
-            "internal": 5055,
-            "external": 5055,
-            "node": 30013
-        }],
-        "service_type": "NodePort" 
+    "env": [
+        {
+            "name": "PUID", 
+            "value": "1000"
+        },
+        {
+            "name": "PGID", 
+            "value": "1000"
+        },
+        {
+            "name": "TZ",   
+            "value": "Etc/UTC"
+        },
+        {
+            "name": "umask", 
+            "value": "002"
+        }
+    ],
+    "apps": {
+        "sonarr": {
+            "name": "sonarr",
+            "image": "ghcr.io/hotio/sonarr",
+            "namespace": "arr-stack",
+            "replicas": 1,
+            "service_type": "NodePort",
+            "ports": [{
+                "name": "web-ui",
+                "protocol": "TCP",
+                "internal": 8989,
+                "external": 8989,
+                "node": 30011
+            }],
+            "volumes": [
+                {
+                    "name": "drive",
+                    "mount_path": "/drive",
+                    "host_path": "/drive"
+                },
+                {
+                    "name": "config",
+                    "mount_path": "/config",
+                    "host_path": "/drive/apps/sonarr"
+                }
+            ]
+        },
+        "radarr": {
+            "name": "radarr",
+            "image": "ghcr.io/hotio/radarr",
+            "namespace": "arr-stack",
+            "replicas": 1,
+            "service_type": "NodePort",
+            "ports": [{
+                "name": "web-ui",
+                "protocol": "TCP",
+                "internal": 7878,
+                "external": 7878,
+                "node": 30010
+            }],
+            "volumes": [
+                {
+                    "name": "drive",
+                    "mount_path": "/drive",
+                    "host_path": "/drive"
+                },
+                {
+                    "name": "config",
+                    "mount_path": "/config",
+                    "host_path": "/drive/apps/radarr"
+                }
+            ]
+        },
+        "prowlarr": {
+            "name": "prowlarr",
+            "image": "lscr.io/linuxserver/prowlarr:latest",
+            "namespace": "arr-stack",
+            "replicas": 1,
+            "service_type": "NodePort",
+            "ports": [{
+                "name": "web-ui",
+                "protocol": "TCP",
+                "internal": 9696,
+                "external": 9696,
+                "node": 30012
+            }],
+            "volumes": [
+                {
+                    "name": "drive",
+                    "mount_path": "/drive",
+                    "host_path": "/drive"
+                },
+                {
+                    "name": "config",
+                    "mount_path": "/config",
+                    "host_path": "/drive/apps/prowlarr"
+                }
+            ]
+        },
+        "jellyseerr": {
+            "name": "jellyseerr",
+            "image": "ghcr.io/hotio/jellyseerr",
+            "namespace": "arr-stack",
+            "replicas": 1,
+            "service_type": "NodePort",
+            "ports": [{
+                "name": "web-ui",
+                "protocol": "TCP",
+                "internal": 5055,
+                "external": 5055,
+                "node": 30013
+            }],
+            "volumes": [
+                {
+                    "name": "drive",
+                    "mount_path": "/drive",
+                    "host_path": "/drive"
+                },
+                {
+                    "name": "config",
+                    "mount_path": "/config",
+                    "host_path": "/drive/apps/jellyseerr"
+                }
+            ]
+        },
+        "transmission": {
+            "name": "transmission",
+            "image": "lscr.io/linuxserver/transmission",
+            "namespace": "arr-stack",
+            "replicas": 1,
+            "service_type": "NodePort", 
+            "ports": [{
+                "name": "web-ui",
+                "protocol": "TCP",
+                "internal": 9091,
+                "external": 9091,
+                "node": 30014
+            },{
+                "name": "bittorrent-tcp",
+                "protocol": "TCP",
+                "internal": 51413,
+                "external": 51413,
+                "node": 30015
+            }, {
+                "name": "bittorrent-udp",
+                "protocol": "UDP",
+                "internal": 51413,
+                "external": 51413,
+                "node": 30016
+            }],
+            "volumes": [
+                {
+                    "name": "drive",
+                    "mount_path": "/drive",
+                    "host_path": "/drive"
+                },
+                {
+                    "name": "config",
+                    "mount_path": "/config",
+                    "host_path": "/drive/apps/transmission"
+                }
+            ]
+        }
     }
 }
+

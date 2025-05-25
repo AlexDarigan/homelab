@@ -1,6 +1,6 @@
 resource "kubernetes_service" "arr_service" {
   metadata {
-    namespace = var.namespace
+    namespace = var.model.namespace
     name = local.service_name
   }
   spec {
@@ -9,13 +9,15 @@ resource "kubernetes_service" "arr_service" {
     }
     
     dynamic "port" {
-      for_each = var.ports
+      for_each = var.model.ports
       content {
+        name = port.value.name
+        protocol = port.value.protocol
         target_port = port.value.internal
         port = port.value.external
         node_port = port.value.node
       }
     }
-    type = var.service_type
+    type = var.model.service_type
   }
 }

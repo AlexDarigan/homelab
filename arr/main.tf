@@ -1,51 +1,70 @@
-variable "KUBECONFIG" {
-  type = string
-  sensitive = true
-}
-
-terraform {
-  required_providers {
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 2.25"
-    }
-    http = {
-      source = "hashicorp/http"
-      version = "3.5.0"
-    }
-    local = {
-      source = "hashicorp/local"
-      version = "2.5.3"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.0" # Use an appropriate version
+resource "kubernetes_deployment" "arr_deployment" {
+  metadata {
+    namespace = var.model.namespace
+    name = local.deployment_name
+    labels = {
+      app = local.app_name
     }
   }
-  
+  spec {
+    replicas = var.model.replicas
+    selector {
+      match_labels = {
+        app = local.app_name
+      }
+    }
+    template {
+      metadata {
+        namespace = var.model.namespace
+        labels = {
+          app = local.app_name
+        }
+      }
+      spec {
+        container {
+          name = local.container_name
+          image = var.model.image
+          dynamic "port" {
+            for_each = var.model.ports
+            content {
+              protocol = port.value.protocol
+              container_port = port.value.internal
+            }
+          }
+
+          // Setting Volume Mounts
+          dynamic "volume_mount" {
+            for_each = var.model.volumes
+            content {
+              name = volume_mount.value.name
+              mount_path = volume_mount.value.mount_path
+            }
+          }
+        
+
+          // Setting Environment Variables
+          dynamic "env" {
+            for_each = var.env
+            content {
+              name = env.value.name
+              value = env.value.value
+            }
+          }
+        }
+
+        // Hosting Volumes
+        dynamic "volume" {
+          for_each = var.model.volumes
+          content {
+            name = volume.value.name
+            host_path {
+              path = volume.value.host_path
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
-provider "kubernetes" {
-    config_path = var.KUBECONFIG
-}
-
-module "arrstackX" {
-  source       = "./core"
-  for_each     = var.config
-  name         = each.value.name
-  namespace    = each.value.namespace
-  image        = each.value.image
-  ports        = each.value.ports
-  service_type = each.value.service_type
-}
-
-module "Transmission" {
-  KUBECONFIG = var.KUBECONFIG
-  name = "transmission"
-  source = "./download"
-  image = "lscr.io/linuxserver/transmission"
-  port = 9090
-  replicas = 1
-  node_port = 30014
-}
 
