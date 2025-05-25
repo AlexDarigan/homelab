@@ -8,6 +8,10 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.25"
     }
+    random = {
+      source = "hashicorp/random"
+      version = "~> 3.7.2"
+    }
   }
 }
 
@@ -28,8 +32,8 @@ provider "kubernetes" {
 #   agent = local.connection.agent
 # }
 
-module "arr" {
-  source = "./arr"
+module "starr" {
+  source = "./starr"
   for_each = local.config.apps
   model = each.value
   env = local.config.env
