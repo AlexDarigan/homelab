@@ -56,14 +56,28 @@ resource "time_sleep" "wait_for_service" {
 }
 
 module "add_prowlarr_app" {
-  source = "./requests"
-  for_each = local.requests
+  source = "./requests/add/application"
+  for_each = local.requests.apps
   request = each.value
   prowlarr = module.starr["prowlarr"].app
   application = module.starr[each.key].app
+  
   depends_on = [ 
     time_sleep.wait_for_service
   ]  
 }
 
+module "add_download_client" {
+  source = "./requests/add/download_client"
+  request = local.requests.download_client.sonarr
+  transmission = module.starr["transmission"].app
+  application = module.starr["sonarr"].app
+
+  depends_on = [ 
+    time_sleep.wait_for_service
+  ]  
+}
+
+// Add TM to Sonarr
+// Add TM to Radarr
 

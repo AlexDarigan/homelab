@@ -11,6 +11,7 @@ variable "prowlarr" {
   type = object({
     ip = string
     port = number
+    node_port = number
     api_key = string
   })
 
