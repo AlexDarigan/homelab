@@ -28,7 +28,7 @@ variable "env" {
 }
 
 locals {
-  app_name = "${var.model.name}-app"
+  app_name = "${var.model.name}"
   container_name = "${var.model.name}-container"
   deployment_name = "${var.model.name}-deployment"
   service_name = "${var.model.name}-service"

@@ -20,7 +20,7 @@
     "apps": {
         "sonarr": {
             "name": "sonarr",
-            "image": "ghcr.io/hotio/sonarr",
+            "image": "lscr.io/linuxserver/sonarr:latest",
             "namespace": "arr-stack",
             "replicas": 1,
             "service_type": "NodePort",
@@ -46,7 +46,7 @@
         },
         "radarr": {
             "name": "radarr",
-            "image": "ghcr.io/hotio/radarr",
+            "image": "lscr.io/linuxserver/radarr:latest",
             "namespace": "arr-stack",
             "replicas": 1,
             "service_type": "NodePort",
@@ -96,32 +96,7 @@
                 }
             ]
         },
-        "jellyseerr": {
-            "name": "jellyseerr",
-            "image": "ghcr.io/hotio/jellyseerr",
-            "namespace": "arr-stack",
-            "replicas": 1,
-            "service_type": "NodePort",
-            "ports": [{
-                "name": "web-ui",
-                "protocol": "TCP",
-                "internal": 5055,
-                "external": 5055,
-                "node": 30013
-            }],
-            "volumes": [
-                {
-                    "name": "drive",
-                    "mount_path": "/drive",
-                    "host_path": "/drive"
-                },
-                {
-                    "name": "config",
-                    "mount_path": "/config",
-                    "host_path": "/drive/apps/jellyseerr"
-                }
-            ]
-        },
+     
         "transmission": {
             "name": "transmission",
             "image": "lscr.io/linuxserver/transmission",

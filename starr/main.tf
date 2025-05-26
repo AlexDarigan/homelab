@@ -1,4 +1,12 @@
+resource "random_password" "api_key" {
+  length = 20
+  special = false
+}
+
 resource "kubernetes_deployment" "arr_deployment" {
+  
+  depends_on = [ random_password.api_key ]
+
   metadata {
     namespace = var.model.namespace
     name = local.deployment_name
@@ -6,13 +14,16 @@ resource "kubernetes_deployment" "arr_deployment" {
       app = local.app_name
     }
   }
+
   spec {
     replicas = var.model.replicas
+    
     selector {
       match_labels = {
         app = local.app_name
       }
     }
+
     template {
       metadata {
         namespace = var.model.namespace
@@ -20,10 +31,12 @@ resource "kubernetes_deployment" "arr_deployment" {
           app = local.app_name
         }
       }
+
       spec {
         container {
           name = local.container_name
           image = var.model.image
+
           dynamic "port" {
             for_each = var.model.ports
             content {
@@ -41,7 +54,6 @@ resource "kubernetes_deployment" "arr_deployment" {
             }
           }
         
-
           // Setting Environment Variables
           dynamic "env" {
             for_each = var.env
@@ -49,6 +61,11 @@ resource "kubernetes_deployment" "arr_deployment" {
               name = env.value.name
               value = env.value.value
             }
+          }
+
+          env {
+            name = "${upper(var.model.name)}__AUTH__APIKEY"
+            value = random_password.api_key.result
           }
         }
 
@@ -64,7 +81,7 @@ resource "kubernetes_deployment" "arr_deployment" {
         }
       }
     }
-  }
+  }  
 }
 
 

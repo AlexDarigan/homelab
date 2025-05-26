@@ -20,4 +20,6 @@ resource "kubernetes_service" "arr_service" {
     }
     type = var.model.service_type
   }
+
+  wait_for_load_balancer = true
 }

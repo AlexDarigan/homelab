@@ -1,0 +1,107 @@
+{
+    "radarr": {
+        "route": "api/v1/applications",
+        "method": "POST",
+        "content_type": "application/json",
+        "body": {
+            "name": "AutoRadarr",
+            "implementation": "Radarr",
+            "implementationName": "Radarr",
+            "configContract": "RadarrSettings",
+            "enable": true,
+            "infoLink": "https://wiki.servarr.com/prowlarr/supported#radarr",
+            "syncLevel": "fullSync",
+            "tags": [],
+            "fields": [
+                {
+                    "name": "prowlarrUrl",
+                    "value": "_source_url"
+                },
+                {
+                    "name": "baseUrl",
+                    "value": "_target_url"
+                },
+                {
+                    "name": "apiKey",
+                    "value": "_api_value"
+                },
+                {
+                    "name": "syncCategories",
+                    "value": [
+                        2000,
+                        2010,
+                        2020,
+                        2030,
+                        2040,
+                        2045,
+                        2050,
+                        2060,
+                        2070,
+                        2080,
+                        2090
+                    ]
+                },
+                {
+                    "name": "syncRejectBlocklistedTorrentHashesWhileGrabbing",
+                    "value": false
+                }
+            ]
+        }
+    },
+    "sonarr": {
+        "route": "api/v1/applications",
+        "method": "POST",
+        "content_type": "application/json",
+        "body": {
+            "name": "AutoSonarr",
+            "implementation": "Sonarr",
+            "implementationName": "Sonarr",
+            "configContract": "SonarrSettings",
+            "enable": true,
+            "infoLink": "https://wiki.servarr.com/prowlarr/supported#sonarrhttps://wiki.servarr.com/prowlarr/supported#sonarr",
+            "syncLevel": "fullSync",
+            "tags": [],
+            "fields": [
+                {
+                    "name": "prowlarrUrl",
+                    "value": "_source_url"
+                },
+                {
+                    "name": "baseUrl",
+                    "value": "_target_url"
+                },
+                {
+                    "name": "apiKey",
+                    "value": "_api_value"
+                },
+                {
+                    "name": "syncCategories",
+                    "value": [
+                        5000,
+                        5010,
+                        5020,
+                        5030,
+                        5040,
+                        5045,
+                        5050,
+                        5090
+                    ]
+                },
+                {
+                    "name": "syncAnimeCategories",
+                    "value": [
+                        5070
+                    ]
+                },
+                {
+                    "name": "syncAnimeStandardFormatSearch",
+                    "value": true
+                },
+                {
+                    "name": "syncRejectBlocklistedTorrentHashesWhileGrabbing",
+                    "value": false
+                }
+            ]
+        }
+    }
+}
