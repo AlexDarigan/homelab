@@ -108,7 +108,7 @@
     },
     "download_client": {
         "sonarr": {
-            "route": "/api/v3/downloadclient/1",
+            "route": "api/v3/downloadclient",
             "method": "POST",
             "content_type": "application/json",
             "body": {
@@ -128,14 +128,8 @@
                         "value": "_host_url"
                     },
                     {
-                        "name": "username"
-                    },
-                    {
-                        "name": "password"
-                    },
-                    {
                         "name": "port",
-                        "value": 9091
+                        "value": "_port"
                     },
                     {
                         "name": "useSsl",
@@ -150,18 +144,48 @@
                         "value": "tv-sonarr"
                     },
                     {
-                        "name": "tvImportedCategory"
+                        "name": "addPaused",
+                        "value": false
+                    }
+                ]
+            }
+        },
+        "radarr": {
+            "route": "api/v3/downloadclient",
+            "method": "POST",
+            "content_type": "application/json",
+            "body": {
+                "name": "Transmission",
+                "enable": true,
+                "implementationName": "Transmission",
+                "implementation": "Transmission",
+                "configContract": "TransmissionSettings",
+                "infoLink": "https://wiki.servarr.com/radarr/supported#transmission",
+                "protocol": "torrent",
+                "removeCompletedDownloads": true,
+                "removeFailedDownloads": true,
+                "Priority": 1,
+                "tags": [],
+                "fields": [
+                    {
+                        "name": "host",
+                        "value": "_host_url"
                     },
                     {
-                        "name": "tvDirectory"
+                        "name": "port",
+                        "value": "_port"
                     },
                     {
-                        "name": "recentTvPriority",
-                        "value": 0
+                        "name": "useSsl",
+                        "value": false
                     },
                     {
-                        "name": "olderTvPriority",
-                        "value": 0
+                        "name": "urlBase",
+                        "value": "/transmission/"
+                    },
+                    {
+                        "name": "movieCategory",
+                        "value": "radarr"
                     },
                     {
                         "name": "addPaused",

@@ -29,11 +29,14 @@ variable "application" {
 }
 
 locals {
-  body = replace(
+  body = replace(replace(
         jsonencode(var.request.body), 
         "_host_url", 
         "${var.transmission.ip}"
-        )
+        ), 
+        "_port",
+        var.transmission.port
+  )
 }
 
 #  "_port", 

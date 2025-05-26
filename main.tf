@@ -69,15 +69,12 @@ module "add_prowlarr_app" {
 
 module "add_download_client" {
   source = "./requests/add/download_client"
-  request = local.requests.download_client.sonarr
+  for_each = local.requests.download_client
+  request = each.value
   transmission = module.starr["transmission"].app
-  application = module.starr["sonarr"].app
+  application = module.starr[each.key].app
 
   depends_on = [ 
     time_sleep.wait_for_service
   ]  
 }
-
-// Add TM to Sonarr
-// Add TM to Radarr
-
