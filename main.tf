@@ -78,3 +78,37 @@ module "add_download_client" {
     time_sleep.wait_for_service
   ]  
 }
+
+// Hardcoding this request now
+
+module "set_sonarr_root_folder" {
+  source = "./requests/add/root_folder"
+  app = {
+    folder = "Shows"
+    api_key = module.starr["sonarr"].app.api_key
+    node_port = module.starr["sonarr"].app.node_port
+  }
+
+  depends_on = [ 
+      time_sleep.wait_for_service
+  ]  
+}
+
+module "set_radarr_root_folder" {
+  source = "./requests/add/root_folder"
+  app = {
+    folder = "Movies"
+    api_key = module.starr["radarr"].app.api_key
+    node_port = module.starr["radarr"].app.node_port
+  }
+
+  depends_on = [ 
+      time_sleep.wait_for_service
+  ]  
+}
+
+// Set Download Folder (change to Qbit for REST-like protocol?)
+// Auto-Import Files
+// Auto-Import Indexers
+// Then reset up Jellyfin/Jellyseerr
+
