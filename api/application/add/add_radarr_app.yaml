@@ -1,4 +1,4 @@
-target: radarr
+target: "radarr"
 route: api/v1/applications
 method: POST
 content_type: application/json
