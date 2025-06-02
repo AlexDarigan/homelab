@@ -1,50 +1,19 @@
-terraform {
-  required_providers {
-    null = {
-      source = "hashicorp/null"
-      version = "~> 3.0"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 2.25"
-    }
-    random = {
-      source = "hashicorp/random"
-      version = "~> 3.7.2"
-    }
-    time = {
-      source = "hashicorp/time"
-      version = "0.13.1"
+// Install K3S if not already there, using calico, maybe a different script?
+// create namespace if not exists
+
+resource "kubernetes_namespace" "name" {
+  metadata {
+    name = "starr"
+    labels = {
+      name = "starr"
     }
   }
 }
 
-locals {
-  connection = jsondecode(file(var.RASPI_SSH_CONFIG))
-  config = jsondecode(file("config.json"))
-  requests = jsondecode(file("requests.json"))
-}
-
-provider "kubernetes" {
-    config_path = var.KUBECONFIG
-}
-
-# module "install_k3s" {
-#   source = "./install"
-#   host = local.connection.host
-#   user = local.connection.user
-#   type = local.connection.type
-#   agent = local.connection.agent
-# }
-
-// We can use kubectl to extract api keys after setup and run the http queries
-// Check if python has kubectl package
 module "starr" {
   source = "./starr"
-  for_each = local.config.apps
+  for_each = local.apps
   model = each.value
-  env = local.config.env
-
 }
 
 resource "time_sleep" "wait_for_service" {
@@ -53,62 +22,46 @@ resource "time_sleep" "wait_for_service" {
 
   # This makes the sleep run after module_a, and then module_b depends on the sleep
   depends_on = [module.starr]
+
+  triggers = {
+    always = timestamp()
+  }
 }
 
-module "add_prowlarr_app" {
-  source = "./requests/add/application"
-  for_each = local.requests.apps
-  request = each.value
+module "add_prowlarr_application" {
+  source = "./api/application/add"
+  for_each = local.add_prowlarr_application_requests
   prowlarr = module.starr["prowlarr"].app
-  application = module.starr[each.key].app
+  app = module.starr[each.value.target].app
   
-  depends_on = [ 
-    time_sleep.wait_for_service
-  ]  
-}
-
-module "add_download_client" {
-  source = "./requests/add/download_client"
-  for_each = local.requests.download_client
-  request = each.value
-  transmission = module.starr["transmission"].app
-  application = module.starr[each.key].app
-
-  depends_on = [ 
-    time_sleep.wait_for_service
-  ]  
-}
-
-// Hardcoding this request now
-
-module "set_sonarr_root_folder" {
-  source = "./requests/add/root_folder"
-  app = {
-    folder = "Shows"
-    api_key = module.starr["sonarr"].app.api_key
-    node_port = module.starr["sonarr"].app.node_port
+  request = {
+    route = each.value.route
+    method = each.value.method
+    content_type = each.value.content_type
+    body = each.value.body
   }
 
-  depends_on = [ 
-      time_sleep.wait_for_service
-  ]  
+  depends_on = [ time_sleep.wait_for_service ]
 }
 
-module "set_radarr_root_folder" {
-  source = "./requests/add/root_folder"
-  app = {
-    folder = "Movies"
-    api_key = module.starr["radarr"].app.api_key
-    node_port = module.starr["radarr"].app.node_port
+module "add_root_folders" {
+  source = "./api/root_folder/add"
+  for_each = local.set_root_folder_requests
+  app = module.starr[each.value.app].app
+
+  request = {
+    route = each.value.route
+    method = each.value.method
+    content_type = each.value.content_type
+    body = each.value.body
   }
 
-  depends_on = [ 
-      time_sleep.wait_for_service
-  ]  
+  depends_on = [ time_sleep.wait_for_service ]
 }
 
-// Set Download Folder (change to Qbit for REST-like protocol?)
-// Auto-Import Files
-// Auto-Import Indexers
-// Then reset up Jellyfin/Jellyseerr
+// add download client
+  # Sonarr
+  # api/download_clients POST 
 
+  # Radarr
+  # api/download_clients POST
