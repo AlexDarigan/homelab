@@ -16,20 +16,10 @@ variable "model" {
       name = string
       mount_path = string
       host_path = string
+    })),
+    env = list(object({
+      name = string,
+      value = string,
     }))
   })
-}
-
-variable "env" {
-  type = list(object({
-    name = string
-    value = string
-  }))
-}
-
-locals {
-  app_name = "${var.model.name}"
-  container_name = "${var.model.name}-container"
-  deployment_name = "${var.model.name}-deployment"
-  service_name = "${var.model.name}-service"
 }

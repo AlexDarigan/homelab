@@ -1,0 +1,6 @@
+app: sonarr
+route: api/v3/rootfolder
+method: POST
+content_type: application/json
+body: '{"path": "/library/Cartoons" }'
+

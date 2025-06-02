@@ -1,11 +1,11 @@
-resource "kubernetes_service" "arr_service" {
+resource "kubernetes_service" "starr_service" {
   metadata {
     namespace = var.model.namespace
-    name = local.service_name
+    name = var.model.name
   }
   spec {
     selector = {
-      app = local.app_name
+      app = var.model.name
     }
     
     dynamic "port" {

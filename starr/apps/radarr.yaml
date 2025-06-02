@@ -1,0 +1,27 @@
+name: radarr
+image: 'lscr.io/linuxserver/radarr:latest'
+namespace: starr
+replicas: 1
+service_type: NodePort
+ports:
+  - name: web-ui
+    protocol: TCP
+    internal: 7878
+    external: 7878
+    node: 30041
+volumes:
+  - name: library
+    mount_path: /library
+    host_path: /drive/library
+  - name: config
+    mount_path: /config
+    host_path: /drive/apps/radarr
+env:
+  - name: PUID
+    value: '1000'
+  - name: PGID
+    value: '1000'
+  - name: TZ
+    value: Etc/UTC
+  - name: umask
+    value: '002'

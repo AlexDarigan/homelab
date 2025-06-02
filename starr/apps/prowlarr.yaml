@@ -1,0 +1,27 @@
+name: prowlarr
+image: 'lscr.io/linuxserver/prowlarr:latest'
+namespace: starr
+replicas: 1
+service_type: NodePort
+ports:
+  - name: web-ui
+    protocol: TCP
+    internal: 9696
+    external: 9696
+    node: 30042
+volumes:
+  - name: library
+    mount_path: /library
+    host_path: /drive/library
+  - name: config
+    mount_path: /config
+    host_path: /drive/apps/prowlarr
+env:
+  - name: PUID
+    value: '1000'
+  - name: PGID
+    value: '1000'
+  - name: TZ
+    value: Etc/UTC
+  - name: umask
+    value: '002'

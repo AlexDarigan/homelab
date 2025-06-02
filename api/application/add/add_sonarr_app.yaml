@@ -1,0 +1,56 @@
+target: sonarr
+route: api/v1/applications
+method: POST
+content_type: application/json
+body: '{
+      "name": "AutoSonarr",
+      "implementation": "Sonarr",
+      "implementationName": "Sonarr",
+      "configContract": "SonarrSettings",
+      "enable": true,
+      "infoLink": "https://wiki.servarr.com/prowlarr/supported#sonarrhttps://wiki.servarr.com/prowlarr/supported#sonarr",
+      "syncLevel": "fullSync",
+      "tags": [],
+      "fields": [
+         {
+            "name": "prowlarrUrl",
+            "value": "${prowlarrUrl}"
+          },
+          {
+            "name": "baseUrl",
+            "value": "${baseUrl}"
+          },
+          {
+            "name": "apiKey",
+            "value": "${apiKey}"
+          },
+          {
+            "name": "syncCategories",
+            "value": [
+                5000,
+                5010,
+                5020,
+                5030,
+                5040,
+                5045,
+                5050,
+                5090
+            ]
+          },
+          {
+            "name": "syncAnimeCategories",
+            "value": [
+                5070
+            ]
+          },
+          {
+            "name": "syncAnimeStandardFormatSearch",
+            "value": true
+          },
+          {
+            "name": "syncRejectBlocklistedTorrentHashesWhileGrabbing",
+            "value": false
+          }
+      ]
+  }
+}'
